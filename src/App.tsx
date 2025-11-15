@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { calculateEnergy, calculateCO2 } from './utils/energyCalculator';
-import { 
-  EQUIVALENCES, 
-  calculateEquivalence, 
-  formatEquivalence,
-  type EquivalenceResult 
-} from './data/equivalences';
+import { EQUIVALENCES, calculateEquivalence, formatEquivalence, type EquivalenceResult } from './data/equivalences';
+import { getModelById, getModelsByProvider } from './data/models';
 import './App.css';
 
 interface Results {
@@ -16,11 +12,16 @@ interface Results {
   energyWh: number;
   co2Grams: number;
   equivalences: EquivalenceResult[];
+  modelParams?: number;
+  modelName?: string;
 }
 
 function App() {
   const [query, setQuery] = useState('');
+  const [selectedModelId, setSelectedModelId] = useState<string>('');
   const [results, setResults] = useState<Results | null>(null);
+
+  const modelsByProvider = getModelsByProvider();
 
   const handleCalculate = () => {
     if (!query.trim()) {
@@ -28,7 +29,8 @@ function App() {
       return;
     }
 
-    const energyData = calculateEnergy(query);
+    const selectedModel = selectedModelId ? getModelById(selectedModelId) : undefined;
+    const energyData = calculateEnergy(query, null, selectedModel);
     const co2 = calculateCO2(energyData.energyKWh);
 
     // Calculate equivalences for enabled items
@@ -70,6 +72,31 @@ function App() {
             onChange={(e) => setQuery(e.target.value)}
             rows={6}
           />
+
+          <div className="model-selector">
+            <label htmlFor="model-select">
+              <strong>Model (optional):</strong>
+              <span className="optional-label">Select for more accurate estimates</span>
+            </label>
+            <select
+              id="model-select"
+              className="model-select"
+              value={selectedModelId}
+              onChange={(e) => setSelectedModelId(e.target.value)}
+            >
+              <option value="">Average Model (~7B parameters)</option>
+              {Object.entries(modelsByProvider).map(([provider, models]) => (
+                <optgroup key={provider} label={provider}>
+                  {models.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name} ({model.parameters}B params)
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </div>
+
           <button 
             className="calculate-btn" 
             onClick={handleCalculate}
@@ -100,6 +127,14 @@ function App() {
               </div>
             </div>
 
+            {results.modelName && (
+              <div className="model-info">
+                <p>
+                  <strong>Model:</strong> {results.modelName} ({results.modelParams}B parameters)
+                </p>
+              </div>
+            )}
+
             <div className="equivalences-section">
               <h3>🔌 Your query could power:</h3>
               <div className="equivalences-grid">
@@ -115,8 +150,8 @@ function App() {
 
             <div className="info-box">
               <p>
-                <strong>💡 Did you know?</strong> This is an estimate based on typical LLM energy consumption.
-                Actual values vary by model size, hardware, and datacenter efficiency.
+                <strong>💡 Did you know?</strong> This is an estimate based on {results.modelName ? 'the selected model\'s' : 'typical LLM'} energy consumption.
+                Actual values vary by hardware, implementation, and datacenter efficiency.
               </p>
             </div>
           </div>
@@ -125,6 +160,7 @@ function App() {
         {!results && (
           <div className="placeholder-section">
             <p>Enter a query above to see its estimated energy impact</p>
+            <p className="hint">💡 Tip: Select a specific model for more accurate results</p>
           </div>
         )}
       </main>

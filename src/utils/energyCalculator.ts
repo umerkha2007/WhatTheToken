@@ -4,15 +4,21 @@
  * 
  * This is a simplified version that estimates energy consumption based on:
  * - Estimated token count from query length
- * - GPU energy consumption per token
+ * - GPU energy consumption per token (scales with model parameters)
  * - Datacenter overhead (PUE)
  */
 
+import { type ModelInfo } from '../data/models';
+
 // Constants based on EcoLogits research
-// Energy consumption per token for a typical LLM
-const GPU_ENERGY_PER_TOKEN = 1.5e-6; // kWh per token (simplified average)
+// Base energy consumption formula: Energy = (ALPHA * parameters + BETA) * tokens
+const GPU_ENERGY_ALPHA = 8.91e-8; // kWh per billion parameters per token
+const GPU_ENERGY_BETA = 1.43e-6; // kWh base energy per token
 const DATACENTER_PUE = 1.2; // Power Usage Effectiveness
 const CHARS_PER_TOKEN = 4; // Rough approximation: 4 characters per token
+
+// Default model parameters (7B params - small model)
+const DEFAULT_MODEL_PARAMS = 7; // in billions
 
 export interface EnergyResult {
   inputTokens: number;
@@ -20,6 +26,8 @@ export interface EnergyResult {
   totalTokens: number;
   energyKWh: number;
   energyWh: number;
+  modelParams?: number;
+  modelName?: string;
 }
 
 /**
@@ -39,11 +47,13 @@ export function estimateTokenCount(text: string): number {
  * Calculate energy consumption for a query
  * @param inputText - The user's query text
  * @param outputTokens - Expected output tokens (default: 3x input)
+ * @param model - Optional: specific model information for more accurate calculation
  * @returns Energy consumption object with kWh and equivalences
  */
 export function calculateEnergy(
   inputText: string,
-  outputTokens: number | null = null
+  outputTokens: number | null = null,
+  model?: ModelInfo
 ): EnergyResult {
   const inputTokens = estimateTokenCount(inputText);
   
@@ -53,8 +63,15 @@ export function calculateEnergy(
   // Total tokens processed (input read multiple times + output generation)
   const totalTokens = inputTokens + estimatedOutputTokens;
   
+  // Use model-specific parameters if provided, otherwise use default
+  const modelParams = model?.parameters || DEFAULT_MODEL_PARAMS;
+  
+  // Calculate energy per token based on model size
+  // Formula from EcoLogits: energy_per_token = ALPHA * parameters + BETA
+  const energyPerToken = GPU_ENERGY_ALPHA * modelParams + GPU_ENERGY_BETA;
+  
   // Calculate GPU energy consumption
-  const gpuEnergy = totalTokens * GPU_ENERGY_PER_TOKEN;
+  const gpuEnergy = totalTokens * energyPerToken;
   
   // Apply datacenter overhead
   const totalEnergy = gpuEnergy * DATACENTER_PUE; // in kWh
@@ -65,6 +82,8 @@ export function calculateEnergy(
     totalTokens,
     energyKWh: totalEnergy,
     energyWh: totalEnergy * 1000, // Convert to Wh for easier reading
+    modelParams,
+    modelName: model?.name,
   };
 }
 

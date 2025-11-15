@@ -65,6 +65,49 @@
   border-color: #667eea;
 }
 
+.model-selector {
+  margin-top: 1.5rem;
+}
+
+.optional-label {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.model-select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  font-family: inherit;
+}
+
+.model-select:hover {
+  border-color: #667eea;
+}
+
+.model-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.model-select option {
+  padding: 0.5rem;
+}
+
+.model-select optgroup {
+  font-weight: 600;
+  font-style: normal;
+}
+
 .calculate-btn {
   margin-top: 1rem;
   width: 100%;

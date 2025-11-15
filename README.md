@@ -1,6 +1,6 @@
-# WhatTheToken ⚡
+# WhatTheTokens ⚡
 
-WhatTheToken is a simple, frontend-only web app built with **React + TypeScript + Vite** designed to raise awareness about the energy consumption and carbon footprint of Large Language Model (LLM) queries. Users can enter a query and see how its energy consumption compares to running everyday appliances like LED bulbs, laptops, and microwaves.
+WhatTheTokens is a simple, frontend-only web app built with **React + TypeScript + Vite** designed to raise awareness about the energy consumption and carbon footprint of Large Language Model (LLM) queries. Users can enter a query and see how its energy consumption compares to running everyday appliances like LED bulbs, laptops, and microwaves.
 
 > **Note**: This is an educational awareness tool with simplified calculations. Actual energy consumption varies significantly based on model size, hardware, and datacenter efficiency.
 
@@ -32,8 +32,8 @@ WhatTheToken is a simple, frontend-only web app built with **React + TypeScript 
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/umerkha2007/WhatTheToken.git
-   cd WhatTheToken
+   git clone https://github.com/umerkha2007/WhatTheTokens.git
+   cd WhatTheTokens
    ```
 
 2. **Install dependencies**
@@ -66,7 +66,7 @@ npm run preview
 
 ## How It Works
 
-WhatTheToken uses a simplified calculation methodology based on research from [EcoLogits](https://ecologits.ai/):
+WhatTheTokens uses a simplified calculation methodology based on research from [EcoLogits](https://ecologits.ai/):
 
 1. **Token Estimation**: Converts your query text to estimated tokens (≈4 characters per token)
 2. **Energy Calculation**: Uses typical GPU energy consumption per token (≈1.5×10⁻⁶ kWh/token)
@@ -85,7 +85,7 @@ A typical query like "Write a Python function to sort a list" might:
 ## Project Structure
 
 ```
-WhatTheToken/
+WhatTheTokens/
 ├── public/              # Static assets
 ├── src/
 │   ├── data/

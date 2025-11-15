@@ -53,7 +53,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>⚡ WhatTheToken</h1>
+        <h1>⚡ WhatTheTokens</h1>
         <p className="subtitle">Understand the energy impact of your LLM queries</p>
       </header>
 

@@ -14,9 +14,6 @@ const GPU_ENERGY_PER_TOKEN = 1.5e-6; // kWh per token (simplified average)
 const DATACENTER_PUE = 1.2; // Power Usage Effectiveness
 const CHARS_PER_TOKEN = 4; // Rough approximation: 4 characters per token
 
-// Average model parameters (simplified - using a mid-range model estimate)
-const DEFAULT_MODEL_PARAMS = 7e9; // 7 billion parameters
-
 export interface EnergyResult {
   inputTokens: number;
   outputTokens: number;
